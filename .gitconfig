@@ -1,0 +1,14 @@
+[user]
+	name = Felipe Lippelt
+	email = lippelt.f@gmail.com
+[color] # colorize output
+    diff = auto
+    status = auto
+    branch = auto
+    interactive = auto
+    ui = true
+    pager = true
+[credential] # cache credentials
+    helper = cache --timeout=3600
+[core]
+	editor = code
