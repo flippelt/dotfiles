@@ -33,7 +33,7 @@ command -v colorls > /dev/null && alias ls='colorls --sd --gs' && \
 command -v bat > /dev/null && \
 	alias bat='bat --theme=ansi' && \
 	alias cat='bat --pager=never' && \
-	alias less='bat'
+#	alias less='bat'
 # in debian the command is batcat
 command -v batcat > /dev/null && \
 	alias batcat='batcat --theme=ansi' && \
@@ -221,8 +221,8 @@ then
 		POWERLEVEL9K_PROMPT_ADD_NEWLINE=true
 		POWERLEVEL9K_PROMPT_ON_NEWLINE=true
 		POWERLEVEL9K_RPROMPT_ON_NEWLINE=false
-		POWERLEVEL9K_SHORTEN_DIR_LENGTH=2
-		POWERLEVEL9K_OS_ICON_CONTENT_EXPANSION='${P9K_CONTENT} $(whoami | grep -v "^root\$")'
+		POWERLEVEL9K_SHORTEN_DIR_LENGTH=1
+		POWERLEVEL9K_OS_ICON_CONTENT_EXPANSION=' $(whoami | grep -v "^root\$")'
 		POWERLEVEL9K_OS_ICON_BACKGROUND=red
 		POWERLEVEL9K_OS_ICON_FOREGROUND=white
 		POWERLEVEL9K_ROOT_INDICATOR_BACKGROUND=black
@@ -389,3 +389,10 @@ find() {
 		command find "$@"
 	fi
 }
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+export BREW_HOME="/home/linuxbrew/.linuxbrew/bin"
+export PATH="$PATH:$BREW_HOME"
