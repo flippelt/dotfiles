@@ -49,6 +49,9 @@ command -v btm > /dev/null && alias top='btm $([ "$COLOR_SCHEME" = "light" ] && 
 command -v bashtop > /dev/null && alias top='bashtop'
 command -v bpytop > /dev/null && alias top='bpytop'
 
+### GIT, GITHUB, HUB
+alias git=hub
+
 # --------------------------------- SETTINGS ----------------------------------
 setopt AUTO_CD
 setopt BEEP
