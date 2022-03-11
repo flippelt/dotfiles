@@ -50,7 +50,7 @@ command -v bashtop > /dev/null && alias top='bashtop'
 command -v bpytop > /dev/null && alias top='bpytop'
 
 ### GIT, GITHUB, HUB
-alias git=hub
+# alias git=hub
 
 # --------------------------------- SETTINGS ----------------------------------
 setopt AUTO_CD
