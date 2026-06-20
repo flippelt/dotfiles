@@ -30,4 +30,5 @@ so it overrides everything) — comment the `source` lines to disable.
 | `.gitconfig` | user, colored output (gray+neon theme), editor |
 | `.fzf.zsh` / `.fzf.bash` | fzf loader (Homebrew / `~/.fzf` / distro) |
 | `neon-theme.zsh` | the Gray + Neon Green color theme |
-| `.p10k.zsh` | legacy Powerlevel10k wizard output (not auto-loaded) |
+| `.p10k.zsh` | Powerlevel10k prompt (classic powerline), recolored to the neon theme — sourced by `.zshrc` |
+| `tools/recolor-p10k.mjs` | remaps `.p10k.zsh` colors to the Gray + Neon Green palette |

@@ -74,13 +74,14 @@ cd ~/Documents/Code/dotfiles
 Crie um backup dos seus dotfiles atuais (se existirem) antes de sobrescrever:
 
 ```sh
-for f in .zshrc .bashrc .profile .gitconfig .fzf.zsh .fzf.bash; do [ -e "$HOME/$f" ] && ! [ -L "$HOME/$f" ] && cp "$HOME/$f" "$HOME/$f.bak"; done
+for f in .zshrc .bashrc .profile .gitconfig .fzf.zsh .fzf.bash .p10k.zsh; do [ -e "$HOME/$f" ] && ! [ -L "$HOME/$f" ] && cp "$HOME/$f" "$HOME/$f.bak"; done
 ```
 
-Crie os links simbólicos no `$HOME`:
+Crie os links simbólicos no `$HOME` (inclui o `.p10k.zsh` — o prompt do
+Powerlevel10k vem dele):
 
 ```sh
-for f in .zshrc .bashrc .profile .gitconfig .fzf.zsh .fzf.bash; do ln -sf "$PWD/$f" "$HOME/$f"; done
+for f in .zshrc .bashrc .profile .gitconfig .fzf.zsh .fzf.bash .p10k.zsh; do ln -sf "$PWD/$f" "$HOME/$f"; done
 ```
 
 Linke o tema (o `.zshrc` procura tanto em `~` quanto em `~/.config`):
@@ -178,6 +179,11 @@ Esperado:
   pegou; rode `brew install coreutils` ou confirme que está no `.zshrc` novo.
 - **Powerlevel10k não aparece** → `brew install powerlevel10k` e reabra o
   terminal. O `.zshrc` resolve o caminho do tema via `brew --prefix`.
+- **Mudei o `.p10k.zsh` no repo mas o prompt "não mudou"** → o `~/.p10k.zsh`
+  não está linkado pro clone. Cheque com `ls -la ~/.p10k.zsh` (tem que ser um
+  symlink) e `grep -c FOREGROUND=46 ~/.p10k.zsh` (tem que ser > 0). Se não,
+  re-rode o `for ... ln -sf` da etapa 4 (que agora inclui `.p10k.zsh`) e
+  `exec zsh`.
 
 ## Notas
 
