@@ -1,0 +1,13 @@
+# Dotfiles são scripts de shell — SEMPRE LF, nunca CRLF.
+# CRLF (\r) num .zshrc/.bashrc quebra o shell no macOS/Linux.
+* text=auto eol=lf
+
+*.zsh    text eol=lf
+*.bash   text eol=lf
+.zshrc   text eol=lf
+.bashrc  text eol=lf
+.profile text eol=lf
+.fzf.zsh text eol=lf
+.fzf.bash text eol=lf
+.gitconfig text eol=lf
+*.md     text eol=lf

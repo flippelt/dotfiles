@@ -1,6 +1,23 @@
 # Configure color-scheme
 COLOR_SCHEME=dark # dark/light
 
+# Detecta o SO uma vez (usado em vários pontos abaixo).
+# _OS = 'macos' | 'linux'
+case "$(uname -s)" in
+	Darwin) _OS=macos ;;
+	*)      _OS=linux ;;
+esac
+
+# ------------------------------- macOS / Homebrew ----------------------------
+# Carrega o Homebrew (resolve PATH/MANPATH). Cobre Apple Silicon (/opt/homebrew)
+# e Intel (/usr/local) — o MacBook Pro 2020 13" pode ser qualquer um dos dois.
+if [ "$_OS" = macos ]; then
+	if [ -x /opt/homebrew/bin/brew ]; then
+		eval "$(/opt/homebrew/bin/brew shellenv)"
+	elif [ -x /usr/local/bin/brew ]; then
+		eval "$(/usr/local/bin/brew shellenv)"
+	fi
+fi
 
 # --------------------------------- ALIASES -----------------------------------
 #alias ..='cd ..'
@@ -8,17 +25,36 @@ alias cp='cp -v'
 alias rm='rm -I'
 alias mv='mv -iv'
 alias ln='ln -sriv'
-alias xclip='xclip -selection c'
 command -v vim > /dev/null && alias vi='vim'
 
-### Colorize commands
-alias ls='ls --color=auto'
+### Clipboard (cross-platform): `clip`/`paste` em qualquer SO
+if [ "$_OS" = macos ]; then
+	alias clip='pbcopy'
+	alias paste='pbpaste'
+	alias xclip='pbcopy'           # mantém o hábito do Linux funcionando
+elif command -v xclip > /dev/null; then
+	alias clip='xclip -selection clipboard'
+	alias paste='xclip -selection clipboard -o'
+	alias xclip='xclip -selection c'
+fi
+
+### Colorize commands (GNU usa --color; BSD/macOS usa -G + CLICOLOR)
+if [ "$_OS" = macos ] && command -v gls > /dev/null; then
+	# coreutils GNU via Homebrew (brew install coreutils)
+	alias ls='gls --color=auto --group-directories-first'
+elif [ "$_OS" = macos ]; then
+	export CLICOLOR=1
+	alias ls='ls -G'
+else
+	alias ls='ls --color=auto'
+fi
 alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
-alias diff='diff --color=auto'
-alias ip='ip --color=auto'
-alias pacman='pacman --color=auto'
+# `diff --color` e `ip --color` só existem no GNU/Linux.
+[ "$_OS" = linux ] && alias diff='diff --color=auto'
+[ "$_OS" = linux ] && command -v ip > /dev/null && alias ip='ip --color=auto'
+command -v pacman > /dev/null && alias pacman='pacman --color=auto'
 
 ### LS & TREE
 alias ll='ls -la'
@@ -152,8 +188,13 @@ esac
 # Plugin source helper
 _source_plugin() {
 	local plugin_name="$1"
-	for basedir in ~/.oh-my-zsh/custom/plugins /usr/share
+	# Homebrew (macOS) instala em $(brew --prefix)/share/<plugin>/<plugin>.zsh;
+	# Linux (Arch/Debian) usa /usr/share; oh-my-zsh custom também é coberto.
+	local brew_share=""
+	command -v brew > /dev/null && brew_share="$(brew --prefix)/share"
+	for basedir in ~/.oh-my-zsh/custom/plugins "$brew_share" /usr/share /opt/homebrew/share /usr/local/share
 	do
+		[ -z "$basedir" ] && continue
 		plugin="$basedir/$plugin_name/$plugin_name.zsh"
 		[ -f "$plugin" ] && source "$plugin" && return 0
 	done
@@ -214,9 +255,19 @@ fi
 unset -f _source_plugin
 
 # POWERLEVEL
+# Resolve o powerlevel10k em oh-my-zsh (Linux) ou Homebrew (macOS).
+_p10k_theme=""
+for _cand in \
+	~/.oh-my-zsh/custom/themes/powerlevel10k/powerlevel10k.zsh-theme \
+	"$(command -v brew > /dev/null && echo "$(brew --prefix)/share/powerlevel10k/powerlevel10k.zsh-theme")" \
+	/opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme \
+	/usr/local/share/powerlevel10k/powerlevel10k.zsh-theme
+do
+	[ -n "$_cand" ] && [ -f "$_cand" ] && _p10k_theme="$_cand" && break
+done
 if ! [[ $(tty) = /dev/tty* ]]
 then
-	if source ~/.oh-my-zsh/custom/themes/powerlevel10k/powerlevel10k.zsh-theme 2> /dev/null
+	if [ -n "$_p10k_theme" ] && source "$_p10k_theme" 2> /dev/null
 	then
 		s=' ' # fix too wide icons
 		POWERLEVEL9K_MODE=nerdfont-complete
@@ -394,8 +445,21 @@ find() {
 }
 
 export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+# nvm manual (~/.nvm) ou via Homebrew ($(brew --prefix nvm)).
+if [ -s "$NVM_DIR/nvm.sh" ]; then
+	\. "$NVM_DIR/nvm.sh"
+	[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+elif command -v brew > /dev/null && [ -s "$(brew --prefix nvm 2>/dev/null)/nvm.sh" ]; then
+	\. "$(brew --prefix nvm)/nvm.sh"
+fi
 
-export BREW_HOME="/home/linuxbrew/.linuxbrew/bin"
-export PATH="$PATH:$BREW_HOME"
+# Linuxbrew (só Linux) — no macOS o Homebrew já foi carregado no topo via shellenv.
+if [ "$_OS" = linux ] && [ -x /home/linuxbrew/.linuxbrew/bin/brew ]; then
+	eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+fi
+
+# Tema "Cinza + Verde Neon" — por último pra sobrescrever cores anteriores.
+[ -f ~/.config/neon-theme.zsh ] && source ~/.config/neon-theme.zsh
+[ -f ~/neon-theme.zsh ] && source ~/neon-theme.zsh
+
+unset _OS _p10k_theme _cand 2> /dev/null
