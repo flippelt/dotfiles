@@ -154,7 +154,10 @@ zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,tty,cputime,cmd'
 # bindkey ' ' magic-space
 
 # Prompt
-PROMPT=$'%F{%(#.blue.green)}┌──(%B%F{%(#.red.blue)}%n@%m%b%F{%(#.blue.green)})-[%B%F{reset}%(6~.%-1~/…/%4~.%5~)%b%F{%(#.blue.green)}]\n└─%B%(#.%F{red}#.%F{blue}$)%b%F{reset} '
+# Prompt de fallback (quando o powerlevel10k não está ativo).
+#  = tubo de ensaio (nf-fa-flask) antes do usuário;
+#  = casinha (nf-fa-home) no lugar do hostname. Requer Nerd Font.
+PROMPT=$'%F{%(#.red.green)}┌──(%B%F{%(#.red.green)} %n %F{%(#.red.green)}%b%F{%(#.red.green)})-[%B%F{reset}%(6~.%-1~/…/%4~.%5~)%b%F{%(#.red.green)}]\n└─%B%(#.%F{red}#.%F{green}$)%b%F{reset} '
 RPROMPT=$'%(?.. %? %F{red}%Bx%b%F{reset})%(1j. %j %F{yellow}%Bbg %b%F{reset}.)'
 
 # ----------------------------------- MISC -----------------------------------
@@ -269,67 +272,10 @@ if ! [[ $(tty) = /dev/tty* ]]
 then
 	if [ -n "$_p10k_theme" ] && source "$_p10k_theme" 2> /dev/null
 	then
-		s=' ' # fix too wide icons
-		POWERLEVEL9K_MODE=nerdfont-complete
-		POWERLEVEL9K_SHORTEN_STRATEGY=truncate_beginning
-		POWERLEVEL9K_PROMPT_ADD_NEWLINE=true
-		POWERLEVEL9K_PROMPT_ON_NEWLINE=true
-		POWERLEVEL9K_RPROMPT_ON_NEWLINE=false
-		POWERLEVEL9K_SHORTEN_DIR_LENGTH=1
-		POWERLEVEL9K_OS_ICON_CONTENT_EXPANSION=' $(whoami | grep -v "^root\$")'
-		POWERLEVEL9K_OS_ICON_BACKGROUND=red
-		POWERLEVEL9K_OS_ICON_FOREGROUND=white
-		POWERLEVEL9K_ROOT_INDICATOR_BACKGROUND=black
-		POWERLEVEL9K_ROOT_INDICATOR_FOREGROUND=red
-		POWERLEVEL9K_SSH_BACKGROUND=white
-		POWERLEVEL9K_SSH_FOREGROUND=blue
-		POWERLEVEL9K_FOLDER_ICON=
-		POWERLEVEL9K_DIR_BACKGROUND=blue
-		POWERLEVEL9K_DIR_FOREGROUND=black
-		POWERLEVEL9K_DIR_WRITABLE_BACKGROUND=black
-		POWERLEVEL9K_DIR_WRITABLE_FOREGROUND=red
-		POWERLEVEL9K_VCS_CLEAN_FOREGROUND=black
-		POWERLEVEL9K_VCS_CLEAN_BACKGROUND=green
-		POWERLEVEL9K_VCS_UNTRACKED_FOREGROUND=black
-		POWERLEVEL9K_VCS_UNTRACKED_BACKGROUND=yellow
-		POWERLEVEL9K_VCS_MODIFIED_FOREGROUND=white
-		POWERLEVEL9K_VCS_MODIFIED_BACKGROUND=black
-		POWERLEVEL9K_VCS_UNTRACKED_ICON=●
-		POWERLEVEL9K_VCS_UNSTAGED_ICON=±
-		POWERLEVEL9K_VCS_INCOMING_CHANGES_ICON=↓
-		POWERLEVEL9K_VCS_OUTGOING_CHANGES_ICON=↑
-		POWERLEVEL9K_VCS_COMMIT_ICON=$s
-		POWERLEVEL9K_STATUS_VERBOSE=true
-		POWERLEVEL9K_STATUS_VERBOSE=true
-		POWERLEVEL9K_STATUS_OK_IN_NON_VERBOSE=true
-		POWERLEVEL9K_EXECUTION_TIME_ICON=$s
-		POWERLEVEL9K_COMMAND_EXECUTION_TIME_THRESHOLD=0
-		POWERLEVEL9K_COMMAND_EXECUTION_TIME_BACKGROUND=black
-		POWERLEVEL9K_COMMAND_EXECUTION_TIME_FOREGROUND=blue
-		POWERLEVEL9K_COMMAND_BACKGROUND_JOBS_BACKGROUND=black
-		POWERLEVEL9K_COMMAND_BACKGROUND_JOBS_FOREGROUND=cyan
-		POWERLEVEL9K_TIME_ICON=
-		POWERLEVEL9K_TIME_FORMAT='%D{%k:%M}'
-		POWERLEVEL9K_TIME_BACKGROUND=black
-		POWERLEVEL9K_TIME_FOREGROUND=white
-		POWERLEVEL9K_RAM_ICON=
-		POWERLEVEL9K_RAM_FOREGROUND=black
-		POWERLEVEL9K_RAM_BACKGROUND=yellow
-		POWERLEVEL9K_VI_MODE_FOREGROUND=black
-		POWERLEVEL9K_VI_COMMAND_MODE_STRING=NORMAL
-		POWERLEVEL9K_VI_MODE_NORMAL_BACKGROUND=green
-		POWERLEVEL9K_VI_VISUAL_MODE_STRING=VISUAL
-		POWERLEVEL9K_VI_MODE_VISUAL_BACKGROUND=blue
-		POWERLEVEL9K_VI_OVERWRITE_MODE_STRING=OVERTYPE
-		POWERLEVEL9K_VI_MODE_OVERWRITE_BACKGROUND=red
-		POWERLEVEL9K_VI_INSERT_MODE_STRING=
-		POWERLEVEL9K_LEFT_PROMPT_FIRST_SEGMENT_START_SYMBOL='\uE0B2'
-		POWERLEVEL9K_RIGHT_PROMPT_LAST_SEGMENT_END_SYMBOL='\uE0B0'
-		POWERLEVEL9K_MULTILINE_FIRST_PROMPT_PREFIX='%F{blue}╭─'
-		POWERLEVEL9K_MULTILINE_LAST_PROMPT_PREFIX='%F{blue}╰%f '
-		POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(os_icon root_indicator ssh dir dir_writable vcs)
-		POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(vi_mode status command_execution_time background_jobs time)
-		unset s
+		# Usa a config completa do wizard (~/.p10k.zsh) — layout classic
+		# (os_icon, dir, vcs/branch, status, exec time, time, battery, context),
+		# recolorida pro tema cinza + verde neon (tools/recolor-p10k.mjs).
+		[ -f ~/.p10k.zsh ] && source ~/.p10k.zsh
 	else
 		echo '\033[33m[ ! ]\033[0m ZSH powerlevel10k not installed'
 	fi
