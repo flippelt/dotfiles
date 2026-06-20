@@ -24,14 +24,26 @@ copiar manualmente — o `.zshrc`/`.bashrc` já fazem esse `shellenv` no boot.
 
 ## 2. Pacotes
 
+> ⚠️ **Cole as linhas SEM comentário** (nada de `#` na mesma linha). O zsh
+> padrão do macOS não tem `interactive_comments` ligado até o `.zshrc` novo
+> carregar — comentário colado vira erro (`command not found`, `too many
+> arguments` ou `unknown sort specifier`).
+
+Prompt + plugins de shell:
+
 ```sh
-# Prompt + plugins de shell
 brew install powerlevel10k zsh-autosuggestions zsh-syntax-highlighting
+```
 
-# Ferramentas de linha de comando
+Ferramentas de linha de comando:
+
+```sh
 brew install fzf bat lsd git coreutils
+```
 
-# fzf: instala os key-bindings e a auto-completion
+Key-bindings e auto-completion do fzf:
+
+```sh
 "$(brew --prefix)/opt/fzf/install" --key-bindings --completion --no-update-rc
 ```
 
@@ -52,16 +64,28 @@ Depois selecione **MesloLGS NF** como fonte do seu terminal (passo 6).
 
 ## 4. Instalar os dotfiles
 
-Clone (ou use a cópia que você já tem) e crie links simbólicos no `$HOME`:
+Entre na pasta onde você clonou os dotfiles (ajuste o caminho ao seu clone —
+sem comentário na linha):
 
 ```sh
-cd ~/Documents/Code/dotfiles      # ajuste pro caminho do seu clone
+cd ~/Documents/Code/dotfiles
+```
 
-for f in .zshrc .bashrc .profile .gitconfig .fzf.zsh .fzf.bash; do
-  ln -sf "$PWD/$f" "$HOME/$f"
-done
+Crie um backup dos seus dotfiles atuais (se existirem) antes de sobrescrever:
 
-# tema: pode ficar no ~ ou em ~/.config (o .zshrc procura nos dois)
+```sh
+for f in .zshrc .bashrc .profile .gitconfig .fzf.zsh .fzf.bash; do [ -e "$HOME/$f" ] && ! [ -L "$HOME/$f" ] && cp "$HOME/$f" "$HOME/$f.bak"; done
+```
+
+Crie os links simbólicos no `$HOME`:
+
+```sh
+for f in .zshrc .bashrc .profile .gitconfig .fzf.zsh .fzf.bash; do ln -sf "$PWD/$f" "$HOME/$f"; done
+```
+
+Linke o tema (o `.zshrc` procura tanto em `~` quanto em `~/.config`):
+
+```sh
 mkdir -p ~/.config
 ln -sf "$PWD/neon-theme.zsh" "$HOME/.config/neon-theme.zsh"
 ```
@@ -69,7 +93,8 @@ ln -sf "$PWD/neon-theme.zsh" "$HOME/.config/neon-theme.zsh"
 > Se preferir copiar em vez de linkar, troque `ln -sf` por `cp`. Linkar é melhor
 > pra puxar atualizações com `git pull` sem recopiar.
 
-Recarregue: `exec zsh` (ou feche e reabra o terminal).
+Recarregue: `exec zsh` (ou feche e reabra o terminal). A partir daqui o
+`interactive_comments` está ligado e comentários colados não dão mais erro.
 
 ## 5. Git — credenciais
 
@@ -77,10 +102,10 @@ O `.gitconfig` usa `credential.helper = osxkeychain` (Keychain do macOS, nativo,
 mais seguro que cache em disco). Nada a instalar. Confirme:
 
 ```sh
-git config --get credential.helper   # → osxkeychain
+git config --get credential.helper
 ```
 
-(No Linux, troque pra `helper = cache --timeout=3600`.)
+Deve imprimir `osxkeychain`. (No Linux, troque pra `helper = cache --timeout=3600`.)
 
 ## 6. Terminal — cores e truecolor
 
@@ -88,8 +113,10 @@ O tema usa cores **truecolor** (hex `#39ff14` etc.). Funciona melhor no
 **iTerm2**; o Terminal.app recente também serve.
 
 ```sh
-brew install --cask iterm2   # opcional, recomendado
+brew install --cask iterm2
 ```
+
+(opcional, mas recomendado)
 
 **Fundo escuro é obrigatório** pro tema ser legível. Configure no terminal:
 
@@ -120,16 +147,21 @@ Paleta ANSI sugerida (16 cores) — mantém o visual cinza + verde neon:
 
 ## 7. Verificação
 
-Abra um terminal novo e cheque:
+Abra um terminal novo e rode (uma de cada vez):
 
 ```sh
-echo $_OS 2>/dev/null            # nada (variável é unset no fim) — sem erro é o esperado
-uname -s                         # Darwin
-brew --prefix                    # /opt/homebrew (M1) ou /usr/local (Intel)
-ls                               # diretórios em verde neon
-echo $FZF_DEFAULT_OPTS           # deve conter as cores #39ff14
+uname -s
+brew --prefix
+ls
+echo $FZF_DEFAULT_OPTS
 ```
 
+Esperado:
+
+- `uname -s` → `Darwin`
+- `brew --prefix` → `/opt/homebrew` (Apple Silicon) ou `/usr/local` (Intel)
+- `ls` → diretórios em verde neon
+- `echo $FZF_DEFAULT_OPTS` → contém as cores `#39ff14`
 - Prompt em duas linhas com bordas verde-neon e segmentos cinza escuro ✓
 - `Ctrl-R` abre o histórico no fzf com destaque verde neon ✓
 - `man ls` com títulos em verde neon ✓
