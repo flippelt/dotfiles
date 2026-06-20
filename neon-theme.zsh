@@ -31,7 +31,10 @@ _DANGER='#ff5f5f'    # vermelho claro — perigo (root/erro), legível no escuro
 # ---------------------------------------------------------------------------
 # Prompt de fallback (TTY puro / sem powerlevel10k) — mantém verde neon
 # ---------------------------------------------------------------------------
-if [[ $(tty) = /dev/tty* ]]; then
+# /dev/tty[0-9]* = console virtual do Linux apenas. NÃO usar /dev/tty* aqui:
+# os ptys do macOS (/dev/ttys000) casariam e sobrescreveriam o prompt do p10k
+# com este fallback.
+if [[ $(tty) = /dev/tty[0-9]* ]]; then
 	PROMPT=$'%F{%(#.red.green)}┌──(%B%F{%(#.red.green)}%n@%m%b%F{green})-[%B%F{reset}%(6~.%-1~/…/%4~.%5~)%b%F{green}]\n└─%B%(#.%F{red}#.%F{green}$)%b%F{reset} '
 fi
 

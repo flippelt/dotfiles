@@ -276,7 +276,11 @@ for _cand in \
 do
 	[ -n "$_cand" ] && [ -f "$_cand" ] && _p10k_theme="$_cand" && break
 done
-if ! [[ $(tty) = /dev/tty* ]]
+# Só pula o p10k em console virtual do Linux (/dev/tty1, /dev/tty2…), que não
+# tem Nerd Font. ATENÇÃO: usar /dev/tty[0-9]* — NÃO /dev/tty*, pois os
+# pseudo-terminais do macOS são /dev/ttys000 e casariam com /dev/tty*,
+# fazendo o p10k nunca carregar no Mac.
+if ! [[ $(tty) = /dev/tty[0-9]* ]]
 then
 	if [ -n "$_p10k_theme" ] && source "$_p10k_theme" 2> /dev/null
 	then
