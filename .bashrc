@@ -22,7 +22,15 @@ alias ..='cd ..'
 alias cp='cp -v'
 alias rm='rm -I'
 alias mv='mv -iv'
-alias ln='ln -sriv'
+# `ln -r` (symlink relativo) é só GNU. No macOS (ln BSD) usa gln se houver
+# coreutils, senão cai pra `ln -siv` (sem -r).
+if command -v gln > /dev/null; then
+	alias ln='gln -sriv'
+elif [ "$_OS" = macos ]; then
+	alias ln='ln -siv'
+else
+	alias ln='ln -sriv'
+fi
 command -v vim > /dev/null && alias vi='vim'
 
 ### Clipboard (cross-platform)

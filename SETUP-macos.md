@@ -78,17 +78,18 @@ for f in .zshrc .bashrc .profile .gitconfig .fzf.zsh .fzf.bash .p10k.zsh; do [ -
 ```
 
 Crie os links simbólicos no `$HOME` (inclui o `.p10k.zsh` — o prompt do
-Powerlevel10k vem dele):
+Powerlevel10k vem dele). Use `command ln` pra furar o alias `ln` dos dotfiles
+(que tem `-r`, opção que só existe no GNU/Linux, não no `ln` BSD do macOS):
 
 ```sh
-for f in .zshrc .bashrc .profile .gitconfig .fzf.zsh .fzf.bash .p10k.zsh; do ln -sf "$PWD/$f" "$HOME/$f"; done
+for f in .zshrc .bashrc .profile .gitconfig .fzf.zsh .fzf.bash .p10k.zsh; do command ln -sf "$PWD/$f" "$HOME/$f"; done
 ```
 
 Linke o tema (o `.zshrc` procura tanto em `~` quanto em `~/.config`):
 
 ```sh
 mkdir -p ~/.config
-ln -sf "$PWD/neon-theme.zsh" "$HOME/.config/neon-theme.zsh"
+command ln -sf "$PWD/neon-theme.zsh" "$HOME/.config/neon-theme.zsh"
 ```
 
 > Se preferir copiar em vez de linkar, troque `ln -sf` por `cp`. Linkar é melhor
