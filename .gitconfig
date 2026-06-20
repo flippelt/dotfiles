@@ -8,7 +8,32 @@
     interactive = auto
 	ui = auto
     pager = true
-[credential] # cache credentials
-    helper = cache --timeout=3600
+# Tema cinza + verde neon — legível em fundo escuro.
+# Cores 256: 46 = verde neon, 250 = cinza claro, 240 = cinza, 208 = laranja, 196 = vermelho.
+[color "diff"]
+	meta = 240
+	frag = 46
+	old = 196
+	new = 46 bold
+	commit = 250
+	whitespace = red reverse
+[color "status"]
+	added = 46 bold
+	changed = 208
+	untracked = 240
+	branch = 46 bold
+[color "branch"]
+	current = 46 bold
+	local = 250
+	remote = 240
+[color "decorate"]
+	branch = 46 bold
+	remoteBranch = 208
+	tag = 46
+	HEAD = 250 bold
+[credential]
+	# macOS (alvo): helper nativo do Keychain — mais seguro que cache em disco.
+	# No Linux, troque por:  helper = cache --timeout=3600
+	helper = osxkeychain
 [core]
 	editor = code

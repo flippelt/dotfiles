@@ -26,10 +26,21 @@ if [ -d "$HOME/.local/bin" ] ; then
     PATH="$HOME/.local/bin:$PATH"
 fi
 
-xrandr --newmode "1600x900_60.00"  118.25  1600 1696 1856 2112  900 903 908 934 -hsync +vsync
-xrandr --addmode eDP-1 "1600x900_60.00"
+# Modos de tela custom via xrandr — só fazem sentido no Linux/X11.
+# No macOS não há xrandr; o bloco é pulado.
+if [ "$(uname -s)" != Darwin ] && command -v xrandr > /dev/null 2>&1; then
+    xrandr --newmode "1600x900_60.00"  118.25  1600 1696 1856 2112  900 903 908 934 -hsync +vsync 2>/dev/null
+    xrandr --addmode eDP-1 "1600x900_60.00" 2>/dev/null
 
-xrandr --newmode "1920x1080_60.00"  173.00  1920 2048 2248 2576  1080 1083 1088 1120 -hsync +vsync
-xrandr --addmode eDP-1 "1920x1080_60.00"
+    xrandr --newmode "1920x1080_60.00"  173.00  1920 2048 2248 2576  1080 1083 1088 1120 -hsync +vsync 2>/dev/null
+    xrandr --addmode eDP-1 "1920x1080_60.00" 2>/dev/null
+fi
 
-eval 
+# macOS: carrega o Homebrew em shells de login também (ex.: via Terminal.app).
+if [ "$(uname -s)" = Darwin ]; then
+    if [ -x /opt/homebrew/bin/brew ]; then
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+    elif [ -x /usr/local/bin/brew ]; then
+        eval "$(/usr/local/bin/brew shellenv)"
+    fi
+fi

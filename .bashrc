@@ -2,6 +2,20 @@
 # Configure color-scheme
 COLOR_SCHEME=dark # dark/light
 
+# Detecta o SO (macos/linux).
+case "$(uname -s)" in
+	Darwin) _OS=macos ;;
+	*)      _OS=linux ;;
+esac
+
+# macOS / Homebrew — Apple Silicon (/opt/homebrew) ou Intel (/usr/local).
+if [ "$_OS" = macos ]; then
+	if [ -x /opt/homebrew/bin/brew ]; then
+		eval "$(/opt/homebrew/bin/brew shellenv)"
+	elif [ -x /usr/local/bin/brew ]; then
+		eval "$(/usr/local/bin/brew shellenv)"
+	fi
+fi
 
 # --------------------------------- ALIASES -----------------------------------
 alias ..='cd ..'
@@ -9,17 +23,30 @@ alias cp='cp -v'
 alias rm='rm -I'
 alias mv='mv -iv'
 alias ln='ln -sriv'
-alias xclip='xclip -selection c'
 command -v vim > /dev/null && alias vi='vim'
 
-### Colorize commands
-alias ls='ls --color=auto'
+### Clipboard (cross-platform)
+if [ "$_OS" = macos ]; then
+	alias clip='pbcopy'; alias paste='pbpaste'; alias xclip='pbcopy'
+elif command -v xclip > /dev/null; then
+	alias clip='xclip -selection clipboard'; alias xclip='xclip -selection c'
+fi
+
+### Colorize commands (GNU usa --color; BSD/macOS usa -G + CLICOLOR)
+if [ "$_OS" = macos ] && command -v gls > /dev/null; then
+	alias ls='gls --color=auto --group-directories-first'
+elif [ "$_OS" = macos ]; then
+	export CLICOLOR=1
+	alias ls='ls -G'
+else
+	alias ls='ls --color=auto'
+fi
 alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
-alias diff='diff --color=auto'
-alias ip='ip --color=auto'
-alias pacman='pacman --color=auto'
+[ "$_OS" = linux ] && alias diff='diff --color=auto'
+[ "$_OS" = linux ] && command -v ip > /dev/null && alias ip='ip --color=auto'
+command -v pacman > /dev/null && alias pacman='pacman --color=auto'
 
 ### LS & TREE
 alias ll='ls -la'
@@ -72,8 +99,10 @@ fi
 # Add new line before prompt
 PROMPT_COMMAND="PROMPT_COMMAND=echo"
 
-# Prompt
-PS1='\[\033[;32m\]┌──(\[\033[1;34m\]\u@\h\[\033[;32m\])-[\[\033[0;1m\]\w\[\033[;32m\]]\n\[\033[;32m\]└─\[\033[1;34m\]\$\[\033[0m\] '
+# Prompt — tema cinza + verde neon (legível em fundo escuro):
+#   bordas/símbolos em verde neon (38;5;46), user@host em cinza claro (38;5;250),
+#   caminho em branco-suave.
+PS1='\[\033[38;5;46m\]┌──(\[\033[1;38;5;250m\]\u@\h\[\033[0;38;5;46m\])-[\[\033[0;1;38;5;252m\]\w\[\033[0;38;5;46m\]]\n\[\033[38;5;46m\]└─\[\033[1;38;5;46m\]\$\[\033[0m\] '
 
 # ----------------------------------- MISC -----------------------------------
 export VISUAL=vim
@@ -82,18 +111,23 @@ export EDITOR=$VISUAL
 # enable terminal linewrap
 setterm -linewrap on 2> /dev/null
 
-# colorize man pages
-export LESS_TERMCAP_mb=$'\e[1;32m'
-export LESS_TERMCAP_md=$'\e[1;32m'
+# colorize man pages — tema cinza + verde neon (fundo escuro)
+export LESS_TERMCAP_mb=$'\e[1;38;5;46m'   # negrito → verde neon
+export LESS_TERMCAP_md=$'\e[1;38;5;46m'
 export LESS_TERMCAP_me=$'\e[0m'
 export LESS_TERMCAP_se=$'\e[0m'
-export LESS_TERMCAP_so=$'\e[01;33m'
+export LESS_TERMCAP_so=$'\e[1;38;5;240;48;5;236m'  # status: cinza
 export LESS_TERMCAP_ue=$'\e[0m'
-export LESS_TERMCAP_us=$'\e[1;4;31m'
+export LESS_TERMCAP_us=$'\e[4;38;5;250m'  # sublinhado → cinza claro
 export LESSHISTFILE=-
 
-# colorize ls
-[ -x /usr/bin/dircolors ] && eval "$(dircolors -b)"
+# colorize ls — diretórios em verde neon, legível no escuro
+export CLICOLOR=1
+export LSCOLORS="CxCxxxxxxxxxxxxxCxCx"                                   # BSD/macOS
+export LS_COLORS="di=1;38;5;46:ln=1;38;5;48:ex=38;5;46:fi=0"             # GNU
+# dircolors (GNU) sobrescreve LS_COLORS se disponível; gdircolors no macOS.
+command -v dircolors > /dev/null && eval "$(dircolors -b)" 2>/dev/null
+command -v gdircolors > /dev/null && eval "$(gdircolors -b)" 2>/dev/null
 
 # If this is an xterm set the title to user@host:dir
 case "$TERM" in
@@ -193,4 +227,16 @@ find() {
 		command find "$@"
 	fi
 }
-export PATH=/opt/firefox-developer/firefox:$PATH
+# Firefox Developer — caminho só existe no Linux.
+[ -d /opt/firefox-developer/firefox ] && export PATH=/opt/firefox-developer/firefox:$PATH
+
+# fzf (cross-platform)
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+
+# Tema "Cinza + Verde Neon" — FZF_DEFAULT_OPTS (vale pra bash e zsh)
+export FZF_DEFAULT_OPTS="
+  --color=bg+:#1f1f1f,bg:-1,fg:#c8c8c8,fg+:#ffffff,hl:#39ff14,hl+:#39ff14
+  --color=info:#8a8a8a,prompt:#39ff14,pointer:#39ff14,marker:#39ff14,spinner:#2bcc10,header:#8a8a8a,border:#3a3a3a
+  --height=40% --layout=reverse --border"
+
+unset _OS 2> /dev/null
