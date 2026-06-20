@@ -185,9 +185,10 @@
 
   #################################[ os_icon: os identifier ]##################################
   # OS identifier color.
-  typeset -g POWERLEVEL9K_OS_ICON_FOREGROUND=255
+  typeset -g POWERLEVEL9K_OS_ICON_FOREGROUND=46
   # Custom icon.
-  # typeset -g POWERLEVEL9K_OS_ICON_CONTENT_EXPANSION=''
+  # Icone custom: tubo de ensaio (nf-fa-flask) + usuario (%n), no lugar da maca padrao.
+  typeset -g POWERLEVEL9K_OS_ICON_CONTENT_EXPANSION=$' %n'
 
   ################################[ prompt_char: prompt symbol ]################################
   # Transparent background.
