@@ -37,3 +37,4 @@
 	helper = osxkeychain
 [core]
 	editor = code
+	excludesfile = /Users/lippelt/.config/git/ignore
