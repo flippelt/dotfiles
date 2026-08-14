@@ -25,6 +25,7 @@ so it overrides everything) — comment the `source` lines to disable.
 | File | What |
 |---|---|
 | `.zshrc` | main zsh config (aliases, history, completion, plugins, prompt) |
+| `~/.zshrc.local` | machine-only overlay (gcloud, Grok…); sourced if present, not in the repo |
 | `.bashrc` | bash equivalent |
 | `.profile` | login-shell PATH + (Linux) xrandr modes, guarded per-OS |
 | `.gitconfig` | user, colored output (gray+neon theme), editor |

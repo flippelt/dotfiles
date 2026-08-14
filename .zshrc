@@ -421,3 +421,6 @@ fi
 [ -f ~/neon-theme.zsh ] && source ~/neon-theme.zsh
 
 unset _OS _p10k_theme _cand 2> /dev/null
+
+# Machine-local overlay (gcloud, Grok, etc.). Not in the repo.
+[ -f ~/.zshrc.local ] && source ~/.zshrc.local

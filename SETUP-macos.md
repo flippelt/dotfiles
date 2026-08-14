@@ -94,6 +94,10 @@ command ln -sf "$PWD/neon-theme.zsh" "$HOME/.config/neon-theme.zsh"
 
 > Se preferir copiar em vez de linkar, troque `ln -sf` por `cp`. Linkar é melhor
 > pra puxar atualizações com `git pull` sem recopiar.
+>
+> Coisas só desta máquina (gcloud em Downloads, Grok CLI, etc.) vão em
+> `~/.zshrc.local` — o `.zshrc` do repo faz `source` se o arquivo existir.
+> Não commitar esse overlay.
 
 Recarregue: `exec zsh` (ou feche e reabra o terminal). A partir daqui o
 `interactive_comments` está ligado e comentários colados não dão mais erro.

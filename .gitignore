@@ -1,0 +1,4 @@
+.zshrc.bak.*
+*.bak
+.zshrc.local
+.DS_Store
